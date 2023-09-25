@@ -752,8 +752,7 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
   // in case of using Swift and embedded frameworks, resources included not in main bundle,
   // but in framework bundle
   if (!path) {
-      path = [[[self class] frameworkBundle] pathForResource:@"YTPlayerView-iframe-player"
-                                                      ofType:@"html"];
+      path = [SWIFTPM_MODULE_BUNDLE pathForResource:@"YTPlayerView-iframe-player" ofType:@"html"];
   }
     
   NSString *embedHTMLTemplate =
