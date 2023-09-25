@@ -745,15 +745,7 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
   [self addSubview:self.webView];
 
   NSError *error = nil;
-  NSString *path = [SWIFTPM_MODULE_BUNDLE pathForResource:@"YTPlayerView-iframe-player" ofType:@"html"];
-//  NSString *path = [[NSBundle bundleForClass:[YTPlayerView class]] pathForResource:@"YTPlayerView-iframe-player"
-//                                                                            ofType:@"html"];
-    
-  // in case of using Swift and embedded frameworks, resources included not in main bundle,
-  // but in framework bundle
-  if (!path) {
-      path = [SWIFTPM_MODULE_BUNDLE pathForResource:@"YTPlayerView-iframe-player" ofType:@"html"];
-  }
+    NSString* path = @"<!DOCTYPE html><html><head><meta name=""viewport"" content=""width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no""><style> body{margin:0;width:100%%;height:100%%;background-color:#000000}html{width:100%%;height:100%%;background-color:#000000}.embed-container iframe,.embed-container object,.embed-container embed{ position:absolute;top:0;left:0;width:100%% !important;height:100%% !important}</style></head><body><div class=""embed-container""><div id=""player""></div></div> <script src=""https://www.youtube.com/iframe_api"" onerror=""window.location.href='ytplayer://onYouTubeIframeAPIFailedToLoad'""></script><script>;;var player;;var error=!1;;;YT.ready(function(){;player=new YT.Player('player',%@);;player.setSize(window.innerWidth,window.innerHeight);;window.location.href='ytplayer://onYouTubeIframeAPIReady';;;</script></body></html>";
     
   NSString *embedHTMLTemplate =
       [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
