@@ -744,17 +744,8 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
   _webView = [self createNewWebView];
   [self addSubview:self.webView];
 
-  NSError *error = nil;
-    NSString* path = @"<!DOCTYPE html><html><head><title>youtube</title><meta name='viewport' content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no'><style>body{margin:0;width:100%%height:100%%background-color:#000000html{width:100%%;height:100%%;background-color:#000000.embed-container iframe,.embed-container object,.embed-container embed{position:absolute;top:0;left:0;width:100%% !important;height:100%% !important}</style></head><body><div class='embed-container'><div id='player'></div></div><script src='https://www.youtube.com/iframe_api' onerror='window.location.href='ytplayer://onYouTubeIframeAPIFailedToLoad''></script><script>;var player,error=!1;YT.ready(function(){player=new YT.Player('player',%@);player.setSize(window.innerWidth,window.innerHeight);window.location.href='ytplayer://onYouTubeIframeAPIReady';</script></body></html>";
+    NSString* embedHTMLTemplate = @"<!DOCTYPE html><html><head><title>youtube</title><meta name='viewport' content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no'><style>body{margin:0;width:100%%height:100%%background-color:#000000html{width:100%%;height:100%%;background-color:#000000.embed-container iframe,.embed-container object,.embed-container embed{position:absolute;top:0;left:0;width:100%% !important;height:100%% !important}</style></head><body><div class='embed-container'><div id='player'></div></div><script src='https://www.youtube.com/iframe_api' onerror='window.location.href='ytplayer://onYouTubeIframeAPIFailedToLoad''></script><script>;var player,error=!1;YT.ready(function(){player=new YT.Player('player',%@);player.setSize(window.innerWidth,window.innerHeight);window.location.href='ytplayer://onYouTubeIframeAPIReady';</script></body></html>";
     
-  NSString *embedHTMLTemplate =
-      [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
-
-  if (error) {
-    NSLog(@"Received error rendering template: %@", error);
-    return NO;
-  }
-
   // Render the playerVars as a JSON dictionary.
   NSError *jsonRenderingError = nil;
   NSData *jsonData = [NSJSONSerialization dataWithJSONObject:playerParams
