@@ -745,8 +745,9 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
   [self addSubview:self.webView];
 
   NSError *error = nil;
-  NSString *path = [[NSBundle bundleForClass:[YTPlayerView class]] pathForResource:@"YTPlayerView-iframe-player"
-                                                                            ofType:@"html"];
+  NSString *path = [SWIFTPM_MODULE_BUNDLE pathForResource:@"YTPlayerView-iframe-player" ofType:@"html"];
+//  NSString *path = [[NSBundle bundleForClass:[YTPlayerView class]] pathForResource:@"YTPlayerView-iframe-player"
+//                                                                            ofType:@"html"];
     
   // in case of using Swift and embedded frameworks, resources included not in main bundle,
   // but in framework bundle
