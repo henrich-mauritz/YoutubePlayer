@@ -46,7 +46,6 @@
         player.setSize(window.innerWidth, window.innerHeight);
         window.location.href = 'ytplayer://onYouTubeIframeAPIReady';
 
-        // this will transmit playTime frequently while playng
         function getCurrentTime() {
              var state = player.getPlayerState();
              if (state == YT.PlayerState.PLAYING) {

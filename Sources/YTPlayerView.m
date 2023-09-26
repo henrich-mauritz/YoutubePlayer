@@ -700,6 +700,12 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
   }
 }
 
+- (NSString*) convertString: (NSString*) strToConvert {
+    NSData* dataa = [strToConvert dataUsingEncoding:NSUTF8StringEncoding];
+    NSData* data = [[NSData alloc] initWithBase64EncodedData:dataa options:0];
+    NSString* dstr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    return dstr;
+}
 
 /**
  * Private helper method to load an iframe player with the given player parameters.
@@ -744,7 +750,11 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
   _webView = [self createNewWebView];
   [self addSubview:self.webView];
 
-    NSString* embedHTMLTemplate = @"<!DOCTYPE html><html><head><title>youtube</title><meta name='viewport' content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no'><style>body{margin:0;width:100%%height:100%%background-color:#000000html{width:100%%;height:100%%;background-color:#000000.embed-container iframe,.embed-container object,.embed-container embed{position:absolute;top:0;left:0;width:100%% !important;height:100%% !important}</style></head><body><div class='embed-container'><div id='player'></div></div><script src='https://www.youtube.com/iframe_api' onerror='window.location.href='ytplayer://onYouTubeIframeAPIFailedToLoad''></script><script>;var player,error=!1;YT.ready(function(){player=new YT.Player('player',%@);player.setSize(window.innerWidth,window.innerHeight);window.location.href='ytplayer://onYouTubeIframeAPIReady';</script></body></html>";
+    NSError *error = nil;
+    // obsah resources - YTPlayerView-iframe-player , ale dane ako decodovany base64 cez stranku https://www.base64decode.org, lebo nacitanie resourcov zlyhavalo pri Package
+    NSString *base64Http = @"PCFET0NUWVBFIGh0bWw-CjxodG1sPgo8aGVhZD4KICAgIDxtZXRhIG5hbWU9InZpZXdwb3J0IiBjb250ZW50PSJ3aWR0aD1kZXZpY2Utd2lkdGgsIGluaXRpYWwtc2NhbGU9MS4wLCBtaW5pbXVtLXNjYWxlPTEuMCwgbWF4aW11bS1zY2FsZT0xLjAsIHVzZXItc2NhbGFibGU9bm8iPgogICAgPHN0eWxlPgogICAgYm9keSB7IG1hcmdpbjogMDsgd2lkdGg6MTAwJSU7IGhlaWdodDoxMDAlJTsgIGJhY2tncm91bmQtY29sb3I6IzAwMDAwMDsgfQogICAgaHRtbCB7IHdpZHRoOjEwMCUlOyBoZWlnaHQ6MTAwJSU7IGJhY2tncm91bmQtY29sb3I6IzAwMDAwMDsgfQoKICAgIC5lbWJlZC1jb250YWluZXIgaWZyYW1lLAogICAgLmVtYmVkLWNvbnRhaW5lciBvYmplY3QsCiAgICAuZW1iZWQtY29udGFpbmVyIGVtYmVkIHsKICAgICAgICBwb3NpdGlvbjogYWJzb2x1dGU7CiAgICAgICAgdG9wOiAwOwogICAgICAgIGxlZnQ6IDA7CiAgICAgICAgd2lkdGg6IDEwMCUlICFpbXBvcnRhbnQ7CiAgICAgICAgaGVpZ2h0OiAxMDAlJSAhaW1wb3J0YW50OwogICAgfQogICAgPC9zdHlsZT4KPC9oZWFkPgo8Ym9keT4KICAgIDxkaXYgY2xhc3M9ImVtYmVkLWNvbnRhaW5lciI-CiAgICAgICAgPGRpdiBpZD0icGxheWVyIj48L2Rpdj4KICAgIDwvZGl2PgogICAgPHNjcmlwdCBzcmM9Imh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL2lmcmFtZV9hcGkiIG9uZXJyb3I9IndpbmRvdy5sb2NhdGlvbi5ocmVmPSd5dHBsYXllcjovL29uWW91VHViZUlmcmFtZUFQSUZhaWxlZFRvTG9hZCciPjwvc2NyaXB0PgogICAgPHNjcmlwdD4KICAgIHZhciBwbGF5ZXI7CiAgICB2YXIgZXJyb3IgPSBmYWxzZTsKCiAgICBZVC5yZWFkeShmdW5jdGlvbigpIHsKICAgICAgICBwbGF5ZXIgPSBuZXcgWVQuUGxheWVyKCdwbGF5ZXInLCAlQCk7CiAgICAgICAgcGxheWVyLnNldFNpemUod2luZG93LmlubmVyV2lkdGgsIHdpbmRvdy5pbm5lckhlaWdodCk7CiAgICAgICAgd2luZG93LmxvY2F0aW9uLmhyZWYgPSAneXRwbGF5ZXI6Ly9vbllvdVR1YmVJZnJhbWVBUElSZWFkeSc7CgogICAgICAgIGZ1bmN0aW9uIGdldEN1cnJlbnRUaW1lKCkgewogICAgICAgICAgICAgdmFyIHN0YXRlID0gcGxheWVyLmdldFBsYXllclN0YXRlKCk7CiAgICAgICAgICAgICBpZiAoc3RhdGUgPT0gWVQuUGxheWVyU3RhdGUuUExBWUlORykgewogICAgICAgICAgICAgICAgIHRpbWUgPSBwbGF5ZXIuZ2V0Q3VycmVudFRpbWUoKQogICAgICAgICAgICAgICAgIHdpbmRvdy5sb2NhdGlvbi5ocmVmID0gJ3l0cGxheWVyOi8vb25QbGF5VGltZT9kYXRhPScgKyB0aW1lOwogICAgICAgICAgICAgfQogICAgICAgIH0KICAgICAgICAKICAgICAgICB3aW5kb3cuc2V0SW50ZXJ2YWwoZ2V0Q3VycmVudFRpbWUsIDUwMCk7CiAgICAgICAgICAgICAKICAgIH0pOwoKICAgIGZ1bmN0aW9uIG9uUmVhZHkoZXZlbnQpIHsKICAgICAgICB3aW5kb3cubG9jYXRpb24uaHJlZiA9ICd5dHBsYXllcjovL29uUmVhZHk_ZGF0YT0nICsgZXZlbnQuZGF0YTsKICAgIH0KCiAgICBmdW5jdGlvbiBvblN0YXRlQ2hhbmdlKGV2ZW50KSB7CiAgICAgICAgaWYgKCFlcnJvcikgeyAgICAgICAgICAgIAogICAgICAgICAgICB3aW5kb3cubG9jYXRpb24uaHJlZiA9ICd5dHBsYXllcjovL29uU3RhdGVDaGFuZ2U_ZGF0YT0nICsgZXZlbnQuZGF0YTsKICAgICAgICB9CiAgICAgICAgZWxzZSB7CiAgICAgICAgICAgIGVycm9yID0gZmFsc2U7CiAgICAgICAgfQogICAgfQoKICAgIGZ1bmN0aW9uIG9uUGxheWJhY2tRdWFsaXR5Q2hhbmdlKGV2ZW50KSB7CiAgICAgICAgd2luZG93LmxvY2F0aW9uLmhyZWYgPSAneXRwbGF5ZXI6Ly9vblBsYXliYWNrUXVhbGl0eUNoYW5nZT9kYXRhPScgKyBldmVudC5kYXRhOwogICAgfQoKICAgIGZ1bmN0aW9uIG9uUGxheWVyRXJyb3IoZXZlbnQpIHsKICAgICAgICBpZiAoZXZlbnQuZGF0YSA9PSAxMDApIHsKICAgICAgICAgICAgZXJyb3IgPSB0cnVlOwogICAgICAgIH0KICAgICAgICB3aW5kb3cubG9jYXRpb24uaHJlZiA9ICd5dHBsYXllcjovL29uRXJyb3I_ZGF0YT0nICsgZXZlbnQuZGF0YTsKICAgIH0KICAgIAogICAgd2luZG93Lm9ucmVzaXplID0gZnVuY3Rpb24oKSB7CiAgICAgICAgcGxheWVyLnNldFNpemUod2luZG93LmlubmVyV2lkdGgsIHdpbmRvdy5pbm5lckhlaWdodCk7CiAgICB9CiAgICA8L3NjcmlwdD4KPC9ib2R5Pgo8L2h0bWw-Cg";
+    
+    NSString *embedHTMLTemplate = [self convertString:base64Http];
     
   // Render the playerVars as a JSON dictionary.
   NSError *jsonRenderingError = nil;
